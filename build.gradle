@@ -6,6 +6,12 @@ plugins {
 group 'org.paploo'
 version '1.0-SNAPSHOT'
 
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+}
+
 repositories {
     mavenCentral()
 }
