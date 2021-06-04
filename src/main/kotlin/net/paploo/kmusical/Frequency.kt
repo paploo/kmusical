@@ -23,6 +23,7 @@ data class Frequency(val hertz: Double) {
 sealed interface FrequencyInterval {
     operator fun plus(that: FrequencyInterval): FrequencyInterval
     operator fun minus(that: FrequencyInterval): FrequencyInterval
+    operator fun unaryMinus(): FrequencyInterval
 
     fun toCents(): Cent
     fun toFrequencyRatio(): FrequencyRatio
@@ -31,7 +32,8 @@ sealed interface FrequencyInterval {
 /**
  * An interval defined in terms of the frequency ratio.
  */
-data class FrequencyRatio(val value: Double) : FrequencyInterval {
+@JvmInline
+value class FrequencyRatio(val value: Double) : FrequencyInterval {
     override fun plus(that: FrequencyInterval): FrequencyInterval = when (that) {
         is FrequencyRatio -> FrequencyRatio(value * that.value)
         is Cent -> toCents() + that
@@ -41,6 +43,8 @@ data class FrequencyRatio(val value: Double) : FrequencyInterval {
         is FrequencyRatio -> FrequencyRatio(value / that.value)
         is Cent -> toCents() - that
     }
+
+    override fun unaryMinus(): FrequencyInterval = FrequencyRatio(1.0/value)
 
     override fun toCents(): Cent = Cent(
         (1200.0 * log2(value)).roundToInt()
@@ -52,10 +56,13 @@ data class FrequencyRatio(val value: Double) : FrequencyInterval {
 /**
  * A frequency interval defined as exactly 1/1200 of an octave.
  */
-data class Cent(val value: Int) : FrequencyInterval {
+@JvmInline
+value class Cent(val value: Int) : FrequencyInterval {
     override fun plus(that: FrequencyInterval): FrequencyInterval = Cent(value + that.toCents().value)
 
     override fun minus(that: FrequencyInterval): FrequencyInterval = Cent(value - that.toCents().value)
+
+    override fun unaryMinus(): FrequencyInterval = Cent(-value)
 
     override fun toCents(): Cent = this
 

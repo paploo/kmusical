@@ -1,60 +1,12 @@
 package net.paploo.kmusical
 
-/**
- * The smallest "uniform" interval of the chromatic scale.
- *
- * The exact frequency spacing of semitones is determined by the tuning.
- */
-data class Semitone(val value: Int)
 
-/**
- * An interval on a pitch.
- *
- * For a chromatic 12-tone scale, this can be translated to/from number and quality.
- */
-sealed interface PitchInterval {
-    operator fun plus(that: PitchInterval): PitchInterval
-    operator fun minus(that: PitchInterval): PitchInterval
+sealed interface Pitch {
+    operator fun plus(that: PitchInterval): Pitch
+    operator fun minus(that: PitchInterval): Pitch
+    operator fun minus(that: Pitch): PitchInterval
 
-    fun toSemitoneInterval(): SemitoneInterval
-}
-
-/**
- * An interval in pitch, expressed in semitones.
- */
-data class SemitoneInterval(val semitone: Semitone): PitchInterval {
-
-    override fun plus(that: PitchInterval): PitchInterval {
-        TODO("Not yet implemented")
-    }
-
-    override fun minus(that: PitchInterval): PitchInterval {
-        TODO("Not yet implemented")
-    }
-
-    override fun toSemitoneInterval(): SemitoneInterval {
-        TODO("Not yet implemented")
-    }
-}
-
-/**
- * An interval expressed as a number and quality.
- *
- * TODO: Figure out how to best express this, as
- *       * Not all combinations are legal
- *       * How do octaves work out—need to use compound intervals.
- *       * How do we descend? Are these only positive quantities and we have to subtract?
- *
- * TODO: It may be that we make Interval be SemitoneInterval, and make ChromaticInterval its own thing, and keep typing separated to use each theri own way.
- * TODO: Make a direction, up vs. down (up being the default), to match colloquial terminology "down a fourth"
- */
-data class ChromaticInterval private constructor (val number: Int, val quality: Quality) {
-
-    enum class Quality(val abbreviation: String) {
-        //TODO: Add inversion of each.
-        Perfect("P"), Minor("m"), Major("M"), Diminished("d"), Augmented("A")
-    }
-
+    fun toStandardPitch(): StandardPitch
 }
 
 /**
@@ -64,4 +16,104 @@ data class ChromaticInterval private constructor (val number: Int, val quality: 
  * to the real world. A4 is chosen since this is the modern concert
  * reference pitch, and so is slightly more meaningful than other values.
  */
-data class Pitch(val interval: PitchInterval)
+@JvmInline
+value class StandardPitch(val intervalFromA4: PitchInterval) : Pitch {
+
+    override fun plus(that: PitchInterval): StandardPitch =
+        StandardPitch(intervalFromA4 + that.toSemitoneInterval())
+
+    override fun minus(that: PitchInterval): StandardPitch =
+        StandardPitch(intervalFromA4 - that.toSemitoneInterval())
+
+    override fun minus(that: Pitch): PitchInterval =
+        intervalFromA4 - that.toStandardPitch().intervalFromA4
+
+    override fun toStandardPitch(): StandardPitch = this
+
+    companion object {
+        val concertA: StandardPitch = StandardPitch(SemitoneInterval(0))
+        val middleC: StandardPitch = StandardPitch(SemitoneInterval(-9))
+    }
+}
+
+/**
+ * A pitch by name, using Scientific Pitch Notation as its reference (thus C4 is middle C).
+ *
+ * A pitch that is the same realtive pitch from a refernce pitch may have multiple names, depending on key.
+ * Therefore transformations from a `NamedPitch` to a `StandardPitch` require additional parameters to
+ * correctly choose.
+ */
+data class NamedPitch(val name: PitchName, val accidental: Accidental, val octave: Int) : Pitch {
+
+    enum class PitchName {
+        C, D, E, F, G, A, B;
+
+        /**
+         * Returns the note's value natural pitch interval in Scientific Pitch Notation (C Major scale).
+         */
+        fun toSciPitchInterval(): PitchInterval = when(this) {
+            C -> SemitoneInterval(0)
+            D -> SemitoneInterval(2)
+            E -> SemitoneInterval(4)
+            F -> SemitoneInterval(5)
+            G -> SemitoneInterval(7)
+            A -> SemitoneInterval(9)
+            B -> SemitoneInterval(11)
+        }
+    }
+
+    enum class Accidental(val modifyingInterval: PitchInterval) {
+        DOUBLE_FLAT(SemitoneInterval(-2)),
+        FLAT(SemitoneInterval(-1)),
+        NATURAL(SemitoneInterval(0)),
+        SHARP(SemitoneInterval(1)),
+        DOUBLE_SHARP(SemitoneInterval(2));
+    }
+
+    /**
+     * Adds the given pitch interval, returning a StandardPitch.
+     *
+     * Adding to produce a NamedPitch requires context such as the key.
+     */
+    override fun plus(that: PitchInterval): StandardPitch =
+        toStandardPitch() + that
+
+    /**
+     * Subtracts the given pitch interval, returning a StandardPitch.
+     *
+     * Adding to produce a NamedPitch requires context such as the key.
+     */
+    override fun minus(that: PitchInterval): StandardPitch =
+        toStandardPitch() - that
+
+    /**
+     * Finds the interval between the pitches.
+     */
+    override fun minus(that: Pitch): CompoundInterval =
+        (toStandardPitch() - that).toCompoundInterval()
+
+    /**
+     * TODO: Consider adding a compound interval to a named pitch but having to provide a key.
+     * Adding an interval, especially without knowing the scale, is non-trivial.
+     * The general rule used here is to attempt to have the pitch be a natural
+     * note, followed by a sharp and then a flat.
+     *
+     * TODO: What about starting with a flat and then flatting one step to make a double-flat?
+     *       Is that a different method (like flat() and sharp())? Does that require a key?
+     */
+    //fun plus(that: CompoundInterval, key: Key): NamedPitch = TODO()
+
+    //fun plus(that: SimpleInterval, key: Key): NamedPitch = this.plus(that.toCompoundInterval(), key = key)
+
+    //fun minus(that: CompoundInterval, key: Key): NamedPitch = TODO()
+
+    //fun minus(that: SimpleInterval, key: Key): NamedPitch = this.minus(that.toCompoundInterval(), key = key)
+
+    override fun toStandardPitch(): StandardPitch =
+        StandardPitch.middleC + (name.toSciPitchInterval() + SemitoneInterval(12*octave) + accidental.modifyingInterval)
+
+    companion object {
+        val concertA: NamedPitch = NamedPitch(PitchName.A, Accidental.NATURAL, 4)
+        val middleC: NamedPitch = NamedPitch(PitchName.C, Accidental.NATURAL, 4)
+    }
+}
