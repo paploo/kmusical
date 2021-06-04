@@ -45,21 +45,14 @@ value class StandardPitch(val intervalFromA4: PitchInterval) : Pitch {
  */
 data class NamedPitch(val name: PitchName, val accidental: Accidental, val octave: Int) : Pitch {
 
-    enum class PitchName {
-        C, D, E, F, G, A, B;
-
-        /**
-         * Returns the note's value natural pitch interval in Scientific Pitch Notation (C Major scale).
-         */
-        fun toSciPitchInterval(): PitchInterval = when(this) {
-            C -> SemitoneInterval(0)
-            D -> SemitoneInterval(2)
-            E -> SemitoneInterval(4)
-            F -> SemitoneInterval(5)
-            G -> SemitoneInterval(7)
-            A -> SemitoneInterval(9)
-            B -> SemitoneInterval(11)
-        }
+    enum class PitchName(val sciPitchInterval: PitchInterval) {
+        C(SemitoneInterval(0)),
+        D(SemitoneInterval(2)),
+        E(SemitoneInterval(4)),
+        F(SemitoneInterval(5)),
+        G(SemitoneInterval(7)),
+        A(SemitoneInterval(9)),
+        B(SemitoneInterval(11));
     }
 
     enum class Accidental(val modifyingInterval: PitchInterval) {
@@ -110,7 +103,9 @@ data class NamedPitch(val name: PitchName, val accidental: Accidental, val octav
     //fun minus(that: SimpleInterval, key: Key): NamedPitch = this.minus(that.toCompoundInterval(), key = key)
 
     override fun toStandardPitch(): StandardPitch =
-        StandardPitch.middleC + (name.toSciPitchInterval() + SemitoneInterval(12*octave) + accidental.modifyingInterval)
+        StandardPitch.middleC +
+                (name.sciPitchInterval + SemitoneInterval(SemitoneInterval.octave.value * octave) +
+                accidental.modifyingInterval)
 
     companion object {
         val concertA: NamedPitch = NamedPitch(PitchName.A, Accidental.NATURAL, 4)

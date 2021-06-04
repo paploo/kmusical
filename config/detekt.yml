@@ -1,0 +1,20 @@
+build:
+  maxIssues: 20 # break the build if more than ten weighted issues are found
+  weights:
+    MaxLineLength: 0
+    NewLineAtEndOfFile: 0
+
+style:
+  NewLineAtEndOfFile:
+    active: false
+  ForbiddenComment:
+    values: ['TODO:']
+  MaxLineLength:
+    maxLineLength: 120
+  MagicNumber:
+    severity: 'info'
+    ignoreEnums: true
+
+complexity:
+  ComplexMethod:
+    ignoreSimpleWhenEntries: true

@@ -39,14 +39,18 @@ value class SemitoneInterval(val value: Int) : PitchInterval {
 
     override fun toCompoundInterval(): CompoundInterval = value.let { semitones ->
         val sign = semitones.sign
-        val octaves = Math.floorDiv(semitones.absoluteValue, 12)
-        val simpleInterval = Math.floorMod(semitones.absoluteValue, 12).let { SemitoneInterval(it) }
+        val octaves = Math.floorDiv(semitones.absoluteValue, octave.value)
+        val simpleInterval = Math.floorMod(semitones.absoluteValue, octave.value).let { SemitoneInterval(it) }
 
         CompoundInterval(
             simplePart = simpleInterval.let { SimpleInterval.from(it) },
             octaveSpan = octaves.toUInt(),
             direction = if (sign >=0) CompoundInterval.Direction.UP else CompoundInterval.Direction.DOWN
         )
+    }
+
+    companion object {
+        val octave: SemitoneInterval = SemitoneInterval(12)
     }
 }
 
@@ -93,7 +97,8 @@ enum class SimpleInterval(
 
     override fun toSemitoneInterval(): SemitoneInterval = semitoneInterval
 
-    override fun toCompoundInterval(): CompoundInterval = CompoundInterval(this, octaveSpan = 0U, direction = CompoundInterval.Direction.UP)
+    override fun toCompoundInterval(): CompoundInterval =
+        CompoundInterval(this, octaveSpan = 0U, direction = CompoundInterval.Direction.UP)
 
     companion object {
 
@@ -110,11 +115,12 @@ enum class SimpleInterval(
             else -> from(interval.toSemitoneInterval())
         }
 
+        @Suppress("MagicNumber")
         private fun fromSemitoneInterval(interval: SemitoneInterval): SimpleInterval = interval.value.let { semitones ->
-            if (semitones == 12) {
+            if (semitones == SemitoneInterval.octave.value) {
                 PERFECT_OCTAVE
             } else {
-                when (Math.floorMod(semitones, 12)) {
+                when (Math.floorMod(semitones, SemitoneInterval.octave.value)) {
                     0 -> PERFECT_UNISON
                     1 -> MINOR_SECOND
                     2 -> MAJOR_SECOND
@@ -127,7 +133,8 @@ enum class SimpleInterval(
                     9 -> MAJOR_SIXTH
                     10 -> MINOR_SEVENTH
                     11 -> MAJOR_SEVENTH
-                    else -> throw NoSuchElementException("Failed to convert $interval to a simple one.") //Math.floorMod should keep this from happening.
+                    //Math.floorMod should keep this from happening.
+                    else -> throw NoSuchElementException("Failed to convert $interval to a simple one.")
                 }
             }
         }
@@ -170,7 +177,8 @@ data class CompoundInterval(
     override fun unaryMinus(): CompoundInterval = copy(direction = -direction)
 
     override fun toSemitoneInterval(): SemitoneInterval =
-        (simplePart.toSemitoneInterval() + SemitoneInterval(12*octaveSpan.toInt())).toSemitoneInterval()
+        (simplePart.toSemitoneInterval() +
+                SemitoneInterval(SemitoneInterval.octave.value * octaveSpan.toInt())).toSemitoneInterval()
 
     override fun toCompoundInterval(): CompoundInterval = this
 }
