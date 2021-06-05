@@ -4,17 +4,77 @@ build:
     MaxLineLength: 0
     NewLineAtEndOfFile: 0
 
+complexity:
+  ComplexMethod:
+    ignoreSimpleWhenEntries: true
+  NestedBlockDepth:
+    threshold: 4
+  StringLiteralDuplication:
+    threshold: 1
+    excludeStringsWithLessThan5Characters: false
+
+exceptions:
+  NotImplementedDeclaration:
+    active: true
+  ObjectExtendsThrowable:
+    active: true
+
+formatting:
+  EnumEntryNameCase:
+    active: true
+  Indentation:
+    active: false # Disable: This conflicts with IntelliJ's formatter
+  NoBlankLineBeforeRbrace:
+    active: false # Disable: This conflicts with good "paragraph" formatting
+  NoWildcardImports:
+    excludes: ['**/test/**'] # Disable: Matchers can get rough without wildcards.
+
 style:
   NewLineAtEndOfFile:
     active: false
   ForbiddenComment:
     values: ['TODO:']
-  MaxLineLength:
-    maxLineLength: 120
   MagicNumber:
-    severity: 'info'
     ignoreEnums: true
-
-complexity:
-  ComplexMethod:
-    ignoreSimpleWhenEntries: true
+  ClassOrdering:
+    active: true
+  DataClassShouldBeImmutable:
+    active: true
+  EqualsOnSignatureLine:
+    active: true
+  ExplicitCollectionElementAccessMethod:
+    active: true
+  ExpressionBodySyntax:
+    active: true
+  MandatoryBracesIfStatements:
+    active: true
+  MandatoryBracesLoops:
+    active: true
+  NoTabs:
+    active: true
+  OptionalUnit:
+    active: true
+  OptionalWhenBraces:
+    active: true
+  RedundantHigherOrderMapUsage:
+    active: true
+  SpacingBetweenPackageAndImports:
+    active: true
+  TrailingWhitespace:
+    active: true
+  UnnecessaryApply:
+    active: true
+  UnnecessaryFilter:
+    active: true
+  UnusedImports:
+    active: true
+  UseDataClass:
+    active: true
+  UseIfEmptyOrIfBlank:
+    active: true
+  UseIfInsteadOfWhen:
+    active: true
+  UseIsNullOrEmpty:
+    active: true
+  UseOrEmpty:
+    active: true

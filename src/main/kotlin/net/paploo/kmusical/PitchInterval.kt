@@ -45,7 +45,7 @@ value class SemitoneInterval(val value: Int) : PitchInterval {
         CompoundInterval(
             simplePart = simpleInterval.let { SimpleInterval.from(it) },
             octaveSpan = octaves.toUInt(),
-            direction = if (sign >=0) CompoundInterval.Direction.UP else CompoundInterval.Direction.DOWN
+            direction = if (sign >= 0) CompoundInterval.Direction.UP else CompoundInterval.Direction.DOWN
         )
     }
 
@@ -109,7 +109,7 @@ enum class SimpleInterval(
          * When the interval is compound (e.g. more than one octave up, or is down), then the
          * interval is normalized into the 0-12 range via floor-modulo arithmetic.
          */
-        fun from(interval: PitchInterval): SimpleInterval = when(interval) {
+        fun from(interval: PitchInterval): SimpleInterval = when (interval) {
             is SemitoneInterval -> fromSemitoneInterval(interval)
             is SimpleInterval -> interval
             else -> from(interval.toSemitoneInterval())
@@ -127,13 +127,13 @@ enum class SimpleInterval(
                     3 -> MINOR_THIRD
                     4 -> MAJOR_THIRD
                     5 -> PERFECT_FOURTH
-                    6 -> DIMINISHED_FIFTH //We have to choose one; In the future we can control with an argument.
+                    6 -> DIMINISHED_FIFTH // We have to choose one; In the future we can control with an argument.
                     7 -> PERFECT_FIFTH
                     8 -> MINOR_SIXTH
                     9 -> MAJOR_SIXTH
                     10 -> MINOR_SEVENTH
                     11 -> MAJOR_SEVENTH
-                    //Math.floorMod should keep this from happening.
+                    // Math.floorMod should keep this from happening.
                     else -> throw NoSuchElementException("Failed to convert $interval to a simple one.")
                 }
             }
@@ -162,7 +162,7 @@ data class CompoundInterval(
     enum class Direction {
         UP, DOWN;
 
-        operator fun unaryMinus(): Direction = when(this) {
+        operator fun unaryMinus(): Direction = when (this) {
             UP -> DOWN
             DOWN -> UP
         }

@@ -1,6 +1,5 @@
 package net.paploo.kmusical
 
-
 sealed interface Pitch {
     operator fun plus(that: PitchInterval): Pitch
     operator fun minus(that: PitchInterval): Pitch
@@ -94,13 +93,13 @@ data class NamedPitch(val name: PitchName, val accidental: Accidental, val octav
      * TODO: What about starting with a flat and then flatting one step to make a double-flat?
      *       Is that a different method (like flat() and sharp())? Does that require a key?
      */
-    //fun plus(that: CompoundInterval, key: Key): NamedPitch = TODO()
+//    fun plus(that: CompoundInterval, key: Key): NamedPitch = TODO()
 
-    //fun plus(that: SimpleInterval, key: Key): NamedPitch = this.plus(that.toCompoundInterval(), key = key)
+//    fun plus(that: SimpleInterval, key: Key): NamedPitch = this.plus(that.toCompoundInterval(), key = key)
 
-    //fun minus(that: CompoundInterval, key: Key): NamedPitch = TODO()
+//    fun minus(that: CompoundInterval, key: Key): NamedPitch = TODO()
 
-    //fun minus(that: SimpleInterval, key: Key): NamedPitch = this.minus(that.toCompoundInterval(), key = key)
+//    fun minus(that: SimpleInterval, key: Key): NamedPitch = this.minus(that.toCompoundInterval(), key = key)
 
     override fun toStandardPitch(): StandardPitch =
         StandardPitch.middleC +

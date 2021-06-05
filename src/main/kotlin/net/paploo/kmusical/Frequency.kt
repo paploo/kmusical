@@ -44,7 +44,7 @@ value class FrequencyRatio(val value: Double) : FrequencyInterval {
         is Cent -> toCents() - that
     }
 
-    override fun unaryMinus(): FrequencyInterval = FrequencyRatio(1.0/value)
+    override fun unaryMinus(): FrequencyInterval = FrequencyRatio(1.0 / value)
 
     override fun toCents(): Cent = Cent(
         (Cent.octave.value.toDouble() * log2(value)).roundToInt()
@@ -67,11 +67,11 @@ value class Cent(val value: Int) : FrequencyInterval {
     override fun toCents(): Cent = this
 
     override fun toFrequencyRatio(): FrequencyRatio = FrequencyRatio(
-        Math.pow(2.0, value.toDouble() / octave.value.toDouble() )
+        Math.pow(2.0, value.toDouble() / octave.value.toDouble())
     )
 
     companion object {
-        val zero = Cent(0);
+        val zero = Cent(0)
         val octave = Cent(1200)
     }
 }
