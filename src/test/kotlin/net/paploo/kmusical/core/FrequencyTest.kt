@@ -1,4 +1,4 @@
-package net.paploo.kmusical
+package net.paploo.kmusical.core
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.*

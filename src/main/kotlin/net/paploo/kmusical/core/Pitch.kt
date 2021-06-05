@@ -1,4 +1,4 @@
-package net.paploo.kmusical
+package net.paploo.kmusical.core
 
 sealed interface Pitch {
     operator fun plus(that: PitchInterval): Pitch

@@ -1,4 +1,4 @@
-package net.paploo.kmusical
+package net.paploo.kmusical.core
 
 import kotlin.math.absoluteValue
 import kotlin.math.sign
