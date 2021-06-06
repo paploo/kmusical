@@ -1,5 +1,11 @@
 package net.paploo.kmusical.core
 
+/**
+ * Pitch represents the relative frequency between sounds.
+ *
+ * Pitch does not directly relate to a frequency, as intonations/tunings can have
+ * dramatic affect on the raw frequencies.
+ */
 sealed interface Pitch {
     operator fun plus(that: PitchInterval): Pitch
     operator fun minus(that: PitchInterval): Pitch

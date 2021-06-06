@@ -3,6 +3,7 @@ build:
   weights:
     MaxLineLength: 0
     NewLineAtEndOfFile: 0
+    FinalNewline: 0
 
 complexity:
   ComplexMethod:
@@ -28,6 +29,8 @@ formatting:
     active: false # Disable: This conflicts with good "paragraph" formatting
   NoWildcardImports:
     excludes: ['**/test/**'] # Disable: Matchers can get rough without wildcards.
+  FinalNewline:
+    active: false
 
 style:
   NewLineAtEndOfFile:
