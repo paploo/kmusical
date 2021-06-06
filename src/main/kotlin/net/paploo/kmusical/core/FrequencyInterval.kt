@@ -22,7 +22,8 @@ sealed interface FrequencyInterval {
 /**
  * An interval defined in terms of the frequency ratio.
  */
-data class FrequencyRatio(val value: Double) : FrequencyInterval {
+@JvmInline
+value class FrequencyRatio(val value: Double) : FrequencyInterval {
 
     override fun plus(that: FrequencyInterval): FrequencyRatio =
         FrequencyRatio(value * that.toFrequencyRatio().value)
